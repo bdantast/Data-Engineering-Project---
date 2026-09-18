@@ -157,6 +157,43 @@ DataPulse/
 4. **Analise com IA**: Use a aba "Analise IA" para insights automatizados
 5. **Exportar**: Gere relatorios PDF/Excel ou compartilhe via email/WhatsApp
 
+## Seguranca (Cybersecurity E2E)
+
+O DataPulse implementa as melhores praticas de seguranca de ponta a ponta:
+
+### Protecao contra SQL Injection
+- Todas as queries usam `psycopg2.sql.Identifier` para nomes de tabelas/colunas
+- Validacao de identificadores com regex e whitelist de keywords SQL
+- Nenhum f-string com dados do usuario em queries SQL
+
+### LGPD - Protecao de Dados Pessoais
+- Mascaramento automatico de PII antes de enviar dados para IA
+- Deteccao e redacao de: CPF, CNPJ, email, telefone, cartao, CEP
+- DataFrames mascarados antes de qualquer envio externo
+
+### Criptografia e Conexao Segura
+- SSL obrigatorio (`sslmode=require`) em todas conexoes PostgreSQL
+- Comunicacao HTTPS com APIs (Groq, Ollama)
+- Armazenamento seguro de credenciais via DPAPI Windows
+
+### Validacao de Integridade
+- Hash SHA-256 disponibilizado para validacao do executavel
+- CodeQL workflow para analise SAST automatica
+
+### Boas Practicas
+- Credenciais nunca no codigo-fonte (apenas em `.env`)
+- `.gitignore` protege arquivos sensiveis
+- Recomendacao de usuario somente-leitura no PostgreSQL
+
+### Configuracao Segura do PostgreSQL
+```sql
+-- Crie um usuario apenas para leitura
+CREATE USER usuario_analitico WITH PASSWORD 'senha_forte';
+GRANT CONNECT ON DATABASE meu_banco TO usuario_analitico;
+GRANT USAGE ON SCHEMA public TO usuario_analitico;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO usuario_analitico;
+```
+
 ## Licenca
 
 MIT License - veja o arquivo [LICENSE](LICENSE) para detalhes.
