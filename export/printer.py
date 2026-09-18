@@ -1,4 +1,4 @@
-import subprocess
+﻿import subprocess
 import sys
 import os
 import tempfile
@@ -19,7 +19,7 @@ class Printer:
             return True
 
     @staticmethod
-    def print_text(text, title="DataPulse"):
+    def print_text(text, title="Data Engineering"):
         html = f"""
         <!DOCTYPE html>
         <html>

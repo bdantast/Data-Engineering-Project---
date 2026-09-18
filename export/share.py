@@ -1,4 +1,4 @@
-import webbrowser
+﻿import webbrowser
 import urllib.parse
 from datetime import datetime
 
@@ -36,7 +36,7 @@ class ShareManager:
     @staticmethod
     def generate_summary_message(kpis, table_name=""):
         lines = [
-            f"DataPulse - Resumo {table_name}",
+            f"Data Engineering - Resumo {table_name}",
             f"Gerado em: {datetime.now().strftime('%d/%m/%Y %H:%M')}",
             "",
         ]
@@ -50,7 +50,7 @@ class ShareManager:
     def generate_ai_summary_message(ai_analysis, table_name=""):
         preview = ai_analysis[:500] + "..." if len(ai_analysis) > 500 else ai_analysis
         return (
-            f"DataPulse - Analise IA {table_name}\n"
+            f"Data Engineering - Analise IA {table_name}\n"
             f"Gerado em: {datetime.now().strftime('%d/%m/%Y %H:%M')}\n\n"
             f"{preview}"
         )

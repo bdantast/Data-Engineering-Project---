@@ -1,4 +1,4 @@
-import ttkbootstrap as ttk
+﻿import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 import threading
 import os
@@ -159,7 +159,7 @@ class ExportPage(ttk.Frame):
             )
             email_sender.send(
                 to_email=email,
-                subject="DataPulse - Relatorio de Analise",
+                subject="Data Engineering - Relatorio de Analise",
                 body=f"<pre>{summary}</pre>",
             )
             self.after(0, lambda: self.status_var.set("Email enviado com sucesso!"))
@@ -172,7 +172,7 @@ class ExportPage(ttk.Frame):
         summary = share_manager.generate_summary_message(
             {t: kpis.get("resumo", {}) for t, kpis in kpi_engine.kpis.items()}
         )
-        share_manager.share_email("", "DataPulse - Relatorio", summary)
+        share_manager.share_email("", "Data Engineering - Relatorio", summary)
 
     def _share_whatsapp(self):
         phone = self.phone_entry.get().strip()

@@ -1,4 +1,4 @@
-import ttkbootstrap as ttk
+﻿import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 import threading
 
@@ -72,7 +72,7 @@ class AIChatWidget(ttk.Frame):
         try:
             if self.on_send:
                 response = self.on_send(text)
-                self.after(0, lambda: self.add_message("DataPulse IA", response, "ai"))
+                self.after(0, lambda: self.add_message("Data Engineering IA", response, "ai"))
         except Exception as e:
             self.after(0, lambda: self.add_message("Erro", str(e), "error"))
         finally:

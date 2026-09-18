@@ -60,6 +60,7 @@ class App:
                 command=lambda k=key: self._show_page(k),
                 width=20,
             )
+            btn._base_style = style
             btn.pack(fill=X, padx=10, pady=3)
             self.nav_buttons[key] = btn
 
@@ -98,12 +99,9 @@ class App:
 
         for btn_key, btn in self.nav_buttons.items():
             if btn_key == key:
-                style = btn.cget("bootstyle").replace("-outline", "")
-                btn.configure(bootstyle=style)
+                btn.configure(bootstyle=btn._base_style)
             else:
-                style = btn.cget("bootstyle")
-                if "-outline" not in style:
-                    btn.configure(bootstyle=f"{style}-outline")
+                btn.configure(bootstyle=f"{btn._base_style}-outline")
 
         self.pages[key].pack(fill=BOTH, expand=True)
         self.current_page = key

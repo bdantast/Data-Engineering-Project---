@@ -1,4 +1,4 @@
-import os
+﻿import os
 import tempfile
 from datetime import datetime
 from reportlab.lib.pagesizes import A4
@@ -72,7 +72,7 @@ class PDFReport:
     def _build_header(self):
         elements = []
         elements.append(Spacer(1, 2 * cm))
-        elements.append(Paragraph("DataPulse - Relatorio de Analise", self.styles["ReportTitle"]))
+        elements.append(Paragraph("Data Engineering - Relatorio de Analise", self.styles["ReportTitle"]))
         elements.append(Paragraph(
             f"Gerado em: {datetime.now().strftime('%d/%m/%Y as %H:%M')}",
             self.styles["ReportSubtitle"],
@@ -165,7 +165,7 @@ class PDFReport:
         elements.append(Spacer(1, 2 * cm))
         elements.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor("#e0e0e0")))
         elements.append(Paragraph(
-            f"DataPulse Business Intelligence - Relatorio gerado automaticamente - {datetime.now().strftime('%d/%m/%Y')}",
+            f"Data Engineering Business Intelligence - Relatorio gerado automaticamente - {datetime.now().strftime('%d/%m/%Y')}",
             ParagraphStyle("Footer", parent=self.styles["Normal"], fontSize=8,
                            alignment=TA_CENTER, textColor=colors.HexColor("#999999")),
         ))

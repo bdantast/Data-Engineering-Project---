@@ -1,4 +1,4 @@
-import re
+﻿import re
 import hashlib
 import secrets
 import base64
@@ -145,7 +145,7 @@ def mask_dict_list(data_list, sensitive_keys=None):
 
 
 class SecureStorage:
-    APP_NAME = "DataPulse"
+    APP_NAME = "Data Engineering"
 
     @staticmethod
     def _get_dpapi():
@@ -184,7 +184,7 @@ class SecureStorage:
 
     @staticmethod
     def save_credential(key, value):
-        storage_path = Path.home() / ".datapulse" / "credentials.enc"
+        storage_path = Path.home() / ".Data Engineering" / "credentials.enc"
         storage_path.parent.mkdir(parents=True, exist_ok=True)
         store = {}
         if storage_path.exists():
@@ -199,7 +199,7 @@ class SecureStorage:
 
     @staticmethod
     def load_credential(key):
-        storage_path = Path.home() / ".datapulse" / "credentials.enc"
+        storage_path = Path.home() / ".Data Engineering" / "credentials.enc"
         if not storage_path.exists():
             return None
         try:
@@ -213,7 +213,7 @@ class SecureStorage:
 
     @staticmethod
     def delete_credential(key):
-        storage_path = Path.home() / ".datapulse" / "credentials.enc"
+        storage_path = Path.home() / ".Data Engineering" / "credentials.enc"
         if not storage_path.exists():
             return
         try:

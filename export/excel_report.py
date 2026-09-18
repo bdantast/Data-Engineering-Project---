@@ -1,4 +1,4 @@
-import pandas as pd
+﻿import pandas as pd
 from datetime import datetime
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
@@ -100,7 +100,7 @@ class ExcelReport:
         ws = writer.create_sheet("Resumo", 0)
         ws.column_dimensions["A"].width = 30
         ws.column_dimensions["B"].width = 20
-        ws.cell(row=1, column=1, value="DataPulse - Resumo do Relatorio")
+        ws.cell(row=1, column=1, value="Data Engineering - Resumo do Relatorio")
         ws.cell(row=1, column=1).font = Font(bold=True, size=16, color="1A237E")
         ws.cell(row=2, column=1, value=f"Gerado em: {datetime.now().strftime('%d/%m/%Y as %H:%M')}")
         ws.append([])

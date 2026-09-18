@@ -1,4 +1,4 @@
-import os
+﻿import os
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -27,6 +27,6 @@ SMTP_CONFIG = {
     "password": os.getenv("SMTP_PASSWORD", ""),
 }
 
-APP_NAME = "DataPulse"
+APP_NAME = "Data Engineering"
 APP_VERSION = "1.0.0"
 APP_THEME = "cosmo"

@@ -1,4 +1,4 @@
-# DataPulse - Business Intelligence Desktop
+﻿# Data Engineering - Business Intelligence Desktop
 
 > Software de analise e dashboard para bancos de dados PostgreSQL com inteligencia artificial integrada.
 
@@ -9,7 +9,7 @@
 
 ## Visao Geral
 
-O **DataPulse** e um software desktop de Business Intelligence desenvolvido em Python que conecta-se a qualquer banco de dados PostgreSQL (incluindo Neon Tech), analisa automaticamente os dados e gera dashboards interativos com KPIs, graficos e analises por inteligencia artificial.
+O **Data Engineering** e um software desktop de Business Intelligence desenvolvido em Python que conecta-se a qualquer banco de dados PostgreSQL (incluindo Neon Tech), analisa automaticamente os dados e gera dashboards interativos com KPIs, graficos e analises por inteligencia artificial.
 
 ## Funcionalidades
 
@@ -71,8 +71,8 @@ O **DataPulse** e um software desktop de Business Intelligence desenvolvido em P
 
 ```bash
 # 1. Clone o repositorio
-git clone https://github.com/bdantast/datapulse-business-intelligence.git
-cd datapulse-business-intelligence
+git clone https://github.com/bdantast/Data Engineering-business-intelligence.git
+cd Data Engineering-business-intelligence
 
 # 2. Instale as dependencias
 python setup.py
@@ -106,47 +106,47 @@ python main.py
 # Baixe um modelo
 ollama pull llama3.2
 
-# O DataPulse detecta automaticamente
+# O Data Engineering detecta automaticamente
 ```
 
 ## Estrutura do Projeto
 
 ```
-DataPulse/
-├── main.py                    # Entry point
-├── config.py                  # Configuracoes
-├── requirements.txt           # Dependencias
-├── .env.example               # Template de configuracao
-├── ui/                        # Interface grafica
-│   ├── app.py                 # Janela principal
-│   ├── pages/                 # Paginas do dashboard
-│   │   ├── dashboard.py       # Visao geral
-│   │   ├── vendas.py          # Analise de vendas
-│   │   ├── financeiro.py      # Analise financeira
-│   │   ├── ai_analysis.py     # Analise com IA
-│   │   ├── export.py          # Exportacao
-│   │   └── settings.py        # Configuracoes
-│   └── widgets/               # Componentes reutilizaveis
-│       ├── kpi_card.py        # Cards de KPI
-│       ├── chart_frame.py     # Frames de graficos
-│       ├── data_table.py      # Tabelas de dados
-│       └── ai_chat.py         # Chat com IA
-├── core/                      # Logica de negocio
-│   ├── database.py            # Conexao PostgreSQL
-│   ├── schema_discover.py     # Auto-descoberta
-│   ├── kpi_engine.py          # Calculo de KPIs
-│   └── charts.py              # Geracao de graficos
-├── ai/                        # Integracao IA
-│   ├── groq_client.py         # Cliente Groq
-│   ├── ollama_client.py       # Cliente Ollama
-│   ├── analyzer.py            # Orquestrador
-│   └── prompts.py             # Templates
-└── export/                    # Exportacao
-    ├── pdf_report.py          # Geracao PDF
-    ├── excel_report.py        # Geracao Excel
-    ├── email_sender.py        # Envio por email
-    ├── share.py               # WhatsApp/Telegram
-    └── printer.py             # Impressao
+Data Engineering/
+â”œâ”€â”€ main.py                    # Entry point
+â”œâ”€â”€ config.py                  # Configuracoes
+â”œâ”€â”€ requirements.txt           # Dependencias
+â”œâ”€â”€ .env.example               # Template de configuracao
+â”œâ”€â”€ ui/                        # Interface grafica
+â”‚   â”œâ”€â”€ app.py                 # Janela principal
+â”‚   â”œâ”€â”€ pages/                 # Paginas do dashboard
+â”‚   â”‚   â”œâ”€â”€ dashboard.py       # Visao geral
+â”‚   â”‚   â”œâ”€â”€ vendas.py          # Analise de vendas
+â”‚   â”‚   â”œâ”€â”€ financeiro.py      # Analise financeira
+â”‚   â”‚   â”œâ”€â”€ ai_analysis.py     # Analise com IA
+â”‚   â”‚   â”œâ”€â”€ export.py          # Exportacao
+â”‚   â”‚   â””â”€â”€ settings.py        # Configuracoes
+â”‚   â””â”€â”€ widgets/               # Componentes reutilizaveis
+â”‚       â”œâ”€â”€ kpi_card.py        # Cards de KPI
+â”‚       â”œâ”€â”€ chart_frame.py     # Frames de graficos
+â”‚       â”œâ”€â”€ data_table.py      # Tabelas de dados
+â”‚       â””â”€â”€ ai_chat.py         # Chat com IA
+â”œâ”€â”€ core/                      # Logica de negocio
+â”‚   â”œâ”€â”€ database.py            # Conexao PostgreSQL
+â”‚   â”œâ”€â”€ schema_discover.py     # Auto-descoberta
+â”‚   â”œâ”€â”€ kpi_engine.py          # Calculo de KPIs
+â”‚   â””â”€â”€ charts.py              # Geracao de graficos
+â”œâ”€â”€ ai/                        # Integracao IA
+â”‚   â”œâ”€â”€ groq_client.py         # Cliente Groq
+â”‚   â”œâ”€â”€ ollama_client.py       # Cliente Ollama
+â”‚   â”œâ”€â”€ analyzer.py            # Orquestrador
+â”‚   â””â”€â”€ prompts.py             # Templates
+â””â”€â”€ export/                    # Exportacao
+    â”œâ”€â”€ pdf_report.py          # Geracao PDF
+    â”œâ”€â”€ excel_report.py        # Geracao Excel
+    â”œâ”€â”€ email_sender.py        # Envio por email
+    â”œâ”€â”€ share.py               # WhatsApp/Telegram
+    â””â”€â”€ printer.py             # Impressao
 ```
 
 ## Uso
@@ -159,7 +159,7 @@ DataPulse/
 
 ## Seguranca (Cybersecurity E2E)
 
-O DataPulse implementa as melhores praticas de seguranca de ponta a ponta:
+O Data Engineering implementa as melhores praticas de seguranca de ponta a ponta:
 
 ### Protecao contra SQL Injection
 - Todas as queries usam `psycopg2.sql.Identifier` para nomes de tabelas/colunas
