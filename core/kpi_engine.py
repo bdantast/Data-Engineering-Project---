@@ -1,6 +1,8 @@
 ﻿import pandas as pd
+from psycopg2 import sql
 from core.database import db
 from core.schema_discover import schema_discover
+from core.security import validate_identifier
 
 
 class KPIEngine:
@@ -24,6 +26,7 @@ class KPIEngine:
         return all_kpis
 
     def _vendas_kpis(self, table):
+        validate_identifier(table, "table name")
         amount_cols = schema_discover.detect_amount_columns(table)
         date_col = schema_discover.detect_date_column(table)
         cat_col = schema_discover.detect_category_column(table)
@@ -35,63 +38,78 @@ class KPIEngine:
         }
         if amount_cols:
             for col in amount_cols:
-                sql = f"""
+                validate_identifier(col, "column name")
+                sql_query = sql.SQL("""
                     SELECT
                         SUM({col}) as total,
                         AVG({col}) as media,
                         MIN({col}) as minimo,
                         MAX({col}) as maximo
-                    FROM {table};
-                """
-                result = db.query(sql)
+                    FROM {tbl};
+                """).format(col=sql.Identifier(col), tbl=sql.Identifier(table))
+                result = db.query(sql_query)
                 if result:
                     kpis[f"{col}_total"] = float(result[0]["total"] or 0)
                     kpis[f"{col}_media"] = float(result[0]["media"] or 0)
                     kpis[f"{col}_minimo"] = float(result[0]["minimo"] or 0)
                     kpis[f"{col}_maximo"] = float(result[0]["maximo"] or 0)
         if date_col:
-            sql = f"""
+            validate_identifier(date_col, "column name")
+            sql_query = sql.SQL("""
                 SELECT
                     MIN({date_col}) as primeira_data,
                     MAX({date_col}) as ultima_data
-                FROM {table};
-            """
-            result = db.query(sql)
+                FROM {tbl};
+            """).format(date_col=sql.Identifier(date_col), tbl=sql.Identifier(table))
+            result = db.query(sql_query)
             if result:
                 kpis["primeira_data"] = str(result[0]["primeira_data"] or "")
                 kpis["ultima_data"] = str(result[0]["ultima_data"] or "")
         if cat_col and amount_cols:
             main_amount = amount_cols[0]
-            sql = f"""
+            validate_identifier(cat_col, "column name")
+            validate_identifier(main_amount, "column name")
+            sql_query = sql.SQL("""
                 SELECT {cat_col} as categoria,
                        SUM({main_amount}) as total
-                FROM {table}
+                FROM {tbl}
                 GROUP BY {cat_col}
                 ORDER BY total DESC
                 LIMIT 10;
-            """
-            kpis["top_categorias"] = db.query(sql)
+            """).format(
+                cat_col=sql.Identifier(cat_col),
+                main_amount=sql.Identifier(main_amount),
+                tbl=sql.Identifier(table),
+            )
+            kpis["top_categorias"] = db.query(sql_query)
         return kpis
 
     def _financeiro_kpis(self, table):
+        validate_identifier(table, "table name")
         amount_cols = schema_discover.detect_amount_columns(table)
         kpis = {"colunas_valor": amount_cols}
         if len(amount_cols) >= 2:
             receita_col = amount_cols[0]
             custo_col = amount_cols[1]
-            sql = f"""
+            validate_identifier(receita_col, "column name")
+            validate_identifier(custo_col, "column name")
+            sql_query = sql.SQL("""
                 SELECT
-                    SUM({receita_col}) as receita_total,
-                    SUM({custo_col}) as custo_total,
-                    SUM({receita_col}) - SUM({custo_col}) as lucro,
+                    SUM({receita}) as receita_total,
+                    SUM({custo}) as custo_total,
+                    SUM({receita}) - SUM({custo}) as lucro,
                     CASE
-                        WHEN SUM({receita_col}) > 0
-                        THEN ROUND(((SUM({receita_col}) - SUM({custo_col})) / SUM({receita_col}) * 100)::numeric, 2)
+                        WHEN SUM({receita}) > 0
+                        THEN ROUND(((SUM({receita}) - SUM({custo})) / SUM({receita}) * 100)::numeric, 2)
                         ELSE 0
                     END as margem_percentual
-                FROM {table};
-            """
-            result = db.query(sql)
+                FROM {tbl};
+            """).format(
+                receita=sql.Identifier(receita_col),
+                custo=sql.Identifier(custo_col),
+                tbl=sql.Identifier(table),
+            )
+            result = db.query(sql_query)
             if result:
                 kpis["receita_total"] = float(result[0]["receita_total"] or 0)
                 kpis["custo_total"] = float(result[0]["custo_total"] or 0)
@@ -114,37 +132,52 @@ class KPIEngine:
         }
 
     def get_time_series(self, table, amount_col, date_col, period="month"):
+        validate_identifier(table, "table name")
+        validate_identifier(amount_col, "column name")
+        validate_identifier(date_col, "column name")
         if period == "month":
             trunc = "month"
         elif period == "week":
             trunc = "week"
         else:
             trunc = "day"
-        sql = f"""
+        sql_query = sql.SQL("""
             SELECT
-                DATE_TRUNC('{trunc}', {date_col}) as periodo,
+                DATE_TRUNC({trunc}, {date_col}) as periodo,
                 SUM({amount_col}) as total,
                 COUNT(*) as quantidade
-            FROM {table}
+            FROM {tbl}
             WHERE {date_col} IS NOT NULL
             GROUP BY periodo
             ORDER BY periodo;
-        """
-        return db.query_df(sql)
+        """).format(
+            trunc=sql.Literal(trunc),
+            date_col=sql.Identifier(date_col),
+            amount_col=sql.Identifier(amount_col),
+            tbl=sql.Identifier(table),
+        )
+        return db.query_df(sql_query)
 
     def get_category_breakdown(self, table, amount_col, cat_col):
-        sql = f"""
+        validate_identifier(table, "table name")
+        validate_identifier(amount_col, "column name")
+        validate_identifier(cat_col, "column name")
+        sql_query = sql.SQL("""
             SELECT
                 {cat_col} as categoria,
                 SUM({amount_col}) as total,
                 COUNT(*) as quantidade,
                 ROUND(AVG({amount_col})::numeric, 2) as media
-            FROM {table}
+            FROM {tbl}
             WHERE {cat_col} IS NOT NULL
             GROUP BY {cat_col}
             ORDER BY total DESC;
-        """
-        return db.query_df(sql)
+        """).format(
+            cat_col=sql.Identifier(cat_col),
+            amount_col=sql.Identifier(amount_col),
+            tbl=sql.Identifier(table),
+        )
+        return db.query_df(sql_query)
 
 
 kpi_engine = KPIEngine()

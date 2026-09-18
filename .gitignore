@@ -8,11 +8,23 @@ dist/
 build/
 *.egg
 
-# === Environment ===
+# === Environment & Secrets ===
 .env
+.env.*
+!.env.example
 .venv/
 venv/
 env/
+
+# === Credential Storage ===
+*.enc
+*.pem
+*.key
+*.p12
+*.pfx
+config_private.json
+credentials.json
+secrets.json
 
 # === IDE ===
 .vscode/
@@ -34,3 +46,12 @@ desktop.ini
 reports/
 *.pdf
 *.xlsx
+
+# === Build artifacts ===
+*.exe
+*.spec
+*.whl
+
+# === Security ===
+*.log
+audit.log

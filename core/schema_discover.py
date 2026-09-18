@@ -1,4 +1,6 @@
+from psycopg2 import sql
 from core.database import db
+from core.security import validate_identifier
 
 
 class SchemaDiscover:
@@ -14,18 +16,19 @@ class SchemaDiscover:
         return self.schema_info
 
     def _get_tables(self):
-        sql = """
+        sql_query = """
             SELECT table_name
             FROM information_schema.tables
             WHERE table_schema = 'public'
               AND table_type = 'BASE TABLE'
             ORDER BY table_name;
         """
-        rows = db.query(sql)
+        rows = db.query(sql_query)
         return [r["table_name"] for r in rows]
 
     def _get_columns(self, table):
-        sql = """
+        validate_identifier(table, "table name")
+        sql_query = sql.SQL("""
             SELECT
                 c.column_name,
                 c.data_type,
@@ -42,16 +45,22 @@ class SchemaDiscover:
             WHERE c.table_schema = 'public'
               AND c.table_name = %s
             ORDER BY c.ordinal_position;
-        """
-        return db.query(sql, (table,))
+        """)
+        return db.query(sql_query, (table,))
 
     def get_table_preview(self, table, limit=50):
-        sql = f"SELECT * FROM {table} LIMIT %s;"
-        return db.query_df(sql, (limit,))
+        validate_identifier(table, "table name")
+        sql_query = sql.SQL("SELECT * FROM {} LIMIT %s").format(
+            sql.Identifier(table)
+        )
+        return db.query_df(sql_query, (limit,))
 
     def get_row_count(self, table):
-        sql = f"SELECT COUNT(*) as total FROM {table};"
-        result = db.query(sql)
+        validate_identifier(table, "table name")
+        sql_query = sql.SQL("SELECT COUNT(*) as total FROM {}").format(
+            sql.Identifier(table)
+        )
+        result = db.query(sql_query)
         return result[0]["total"] if result else 0
 
     def get_numeric_columns(self, table):
