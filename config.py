@@ -29,4 +29,26 @@ SMTP_CONFIG = {
 
 APP_NAME = "Data Engineering"
 APP_VERSION = "1.0.0"
-APP_THEME = "cosmo"
+APP_THEME = "darkly"
+
+COLORS = {
+    "bg_dark": "#0a0e17",
+    "bg_card": "#111827",
+    "bg_sidebar": "#0d1117",
+    "bg_table": "#1a1f2e",
+    "bg_table_alt": "#151b2b",
+    "border": "#1e293b",
+    "neon_blue": "#00d4ff",
+    "neon_green": "#00ff88",
+    "neon_purple": "#a855f7",
+    "neon_pink": "#f472b6",
+    "neon_orange": "#fb923c",
+    "neon_yellow": "#facc15",
+    "text_primary": "#e2e8f0",
+    "text_secondary": "#94a3b8",
+    "text_muted": "#64748b",
+    "success": "#00ff88",
+    "danger": "#ff4444",
+    "warning": "#facc15",
+    "info": "#00d4ff",
+}
