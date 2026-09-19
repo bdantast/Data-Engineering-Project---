@@ -31,13 +31,8 @@ class App:
         self.style.configure("TLabel", background=COLORS["bg_dark"], foreground=COLORS["text_primary"])
         self.style.configure("Card.TLabel", background=COLORS["bg_card"])
         self.style.configure("Title.TLabel", font=("Segoe UI", 16, "bold"), foreground=COLORS["text_primary"])
-        self.style.configure("Subtitle.TLabel", font=("Segoe UI", 11), foreground=COLORS["text_secondary"])
         self.style.configure("KPI.TLabel", font=("Segoe UI", 22, "bold"), foreground=COLORS["neon_blue"])
         self.style.configure("KPILabel.TLabel", font=("Segoe UI", 9), foreground=COLORS["text_secondary"])
-        self.style.configure("KPISuccess.TLabel", font=("Segoe UI", 22, "bold"), foreground=COLORS["neon_green"])
-        self.style.configure("KPIDanger.TLabel", font=("Segoe UI", 22, "bold"), foreground=COLORS["neon_pink"])
-        self.style.configure("KPIWarning.TLabel", font=("Segoe UI", 22, "bold"), foreground=COLORS["neon_orange"])
-        self.style.configure("KPIInfo.TLabel", font=("Segoe UI", 22, "bold"), foreground=COLORS["neon_purple"])
         self.style.configure("Accent.TButton", font=("Segoe UI", 10, "bold"))
         self.style.configure("Nav.TButton", font=("Segoe UI", 11), padding=(15, 12))
         self.style.configure("Treeview", background=COLORS["bg_table"], foreground=COLORS["text_primary"],
@@ -46,38 +41,29 @@ class App:
                              font=("Segoe UI", 9, "bold"), relief="flat")
         self.style.map("Treeview", background=[("selected", COLORS["neon_blue"])],
                         foreground=[("selected", COLORS["bg_dark"])])
-        self.style.configure("TNotebook", background=COLORS["bg_dark"])
-        self.style.configure("TNotebook.Tab", background=COLORS["bg_card"], foreground=COLORS["text_secondary"],
-                             padding=(15, 8))
-        self.style.map("TNotebook.Tab",
-                        background=[("selected", COLORS["bg_card"])],
-                        foreground=[("selected", COLORS["neon_blue"])])
-        self.style.configure("Horizontal.TProgressbar", background=COLORS["neon_blue"],
-                             troughcolor=COLORS["bg_card"])
+        self.style.configure("TEntry", fieldbackground=COLORS["bg_card"], foreground=COLORS["text_primary"],
+                             insertcolor=COLORS["text_primary"])
         self.style.configure("TLabelframe", background=COLORS["bg_card"], foreground=COLORS["neon_blue"])
         self.style.configure("TLabelframe.Label", background=COLORS["bg_card"], foreground=COLORS["neon_blue"],
                              font=("Segoe UI", 10, "bold"))
-        self.style.configure("TEntry", fieldbackground=COLORS["bg_card"], foreground=COLORS["text_primary"],
-                             insertcolor=COLORS["text_primary"])
-        self.style.configure("TScrolledText", background=COLORS["bg_card"], foreground=COLORS["text_primary"])
 
     def _build_ui(self):
-        self.sidebar = ttk.Frame(self.root, width=220, style="Card.TFrame")
+        self.sidebar = ttk.Frame(self.root, width=200, style="Card.TFrame")
         self.sidebar.pack(side=LEFT, fill=Y)
         self.sidebar.pack_propagate(False)
 
         logo_frame = ttk.Frame(self.sidebar, style="Card.TFrame")
-        logo_frame.pack(fill=X, pady=(25, 30), padx=15)
+        logo_frame.pack(fill=X, pady=(25, 25), padx=15)
         ttk.Label(
-            logo_frame, text=APP_NAME, font=("Segoe UI", 15, "bold"),
-            foreground=COLORS["neon_blue"], background=COLORS["bg_card"],
+            logo_frame, text="Data Enginee", font=("Segoe UI", 14, "bold"),
+            foreground=COLORS["text_primary"], background=COLORS["bg_card"],
         ).pack(anchor=W)
         ttk.Label(
-            logo_frame, text="Business Intelligence", font=("Segoe UI", 9),
+            logo_frame, text="Business Intelligence", font=("Segoe UI", 8),
             foreground=COLORS["text_muted"], background=COLORS["bg_card"],
         ).pack(anchor=W, pady=(2, 0))
 
-        ttk.Frame(self.sidebar, height=1, style="Card.TFrame").pack(fill=X, padx=15, pady=(0, 15))
+        ttk.Frame(self.sidebar, height=1, background=COLORS["border"]).pack(fill=X, padx=15, pady=(0, 20))
 
         nav_items = [
             ("Dashboard", "dashboard", COLORS["neon_blue"]),
@@ -90,20 +76,13 @@ class App:
 
         self.nav_buttons = {}
         for label, key, color in nav_items:
-            btn_frame = ttk.Frame(self.sidebar, style="Card.TFrame")
-            btn_frame.pack(fill=X, padx=10, pady=3)
-
-            indicator = ttk.Frame(btn_frame, width=3, style="Card.TFrame")
-            indicator.pack(side=LEFT, fill=Y, padx=(0, 8))
-            indicator.configure(style="Card.TFrame")
-
             btn = ttk.Button(
-                btn_frame, text=label, style="Nav.TButton",
+                self.sidebar, text=f"  {label}", style="Nav.TButton",
                 command=lambda k=key: self._show_page(k),
             )
-            btn.pack(fill=X)
+            btn.pack(fill=X, padx=12, pady=4)
             btn._nav_color = color
-            btn._indicator = indicator
+            btn._nav_label = label
             self.nav_buttons[key] = btn
 
         ttk.Frame(self.sidebar, style="Card.TFrame").pack(fill=Y, expand=True)
@@ -136,12 +115,9 @@ class App:
             self.pages[self.current_page].pack_forget()
 
         for btn_key, btn in self.nav_buttons.items():
-            indicator = btn._indicator
             if btn_key == key:
-                indicator.configure(background=btn._nav_color)
                 btn.configure(bootstyle="info")
             else:
-                indicator.configure(background=COLORS["bg_card"])
                 btn.configure(bootstyle="dark")
 
         self.pages[key].pack(fill=BOTH, expand=True)

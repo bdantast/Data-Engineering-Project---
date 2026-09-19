@@ -10,6 +10,7 @@ from core.kpi_engine import kpi_engine
 from core.charts import create_line_chart, create_bar_chart, create_pie_chart
 from config import COLORS
 import pandas as pd
+import random
 
 
 class DashboardPage(ttk.Frame):
@@ -17,66 +18,49 @@ class DashboardPage(ttk.Frame):
         super().__init__(parent, **kwargs)
         self.configure(style="TFrame")
         self.kpi_cards = {}
-        self.charts = []
         self._build_ui()
 
     def _build_ui(self):
-        canvas = ttk.Canvas(self, highlightthickness=False, bg=COLORS["bg_dark"])
-        scrollbar = ttk.Scrollbar(self, orient=VERTICAL, command=canvas.yview)
-        self.scrollable_frame = ttk.Frame(canvas, style="TFrame")
-
-        self.scrollable_frame.bind(
-            "<Configure>",
-            lambda e: canvas.configure(scrollregion=canvas.bbox("all")),
-        )
-        canvas.create_window((0, 0), window=self.scrollable_frame, anchor=NW)
-        canvas.configure(yscrollcommand=scrollbar.set)
-        canvas.pack(side=LEFT, fill=BOTH, expand=True)
-        scrollbar.pack(side=RIGHT, fill=Y)
-
-        self.main_frame = self.scrollable_frame
-
-        header = ttk.Frame(self.main_frame, style="TFrame")
-        header.pack(fill=X, padx=20, pady=(20, 10))
+        header = ttk.Frame(self, style="TFrame")
+        header.pack(fill=X, padx=20, pady=(15, 5))
         ttk.Label(
             header, text="Dashboard - Visao Geral",
-            font=("Segoe UI", 18, "bold"),
+            font=("Segoe UI", 16, "bold"),
             foreground=COLORS["text_primary"], background=COLORS["bg_dark"],
         ).pack(side=LEFT)
-
-        self.refresh_btn = ttk.Button(
-            header, text="Atualizar", bootstyle="info-outline",
+        ttk.Button(
+            header, text="Atualizar", bootstyle="warning",
             command=self.load_data, width=12,
-        )
-        self.refresh_btn.pack(side=RIGHT)
+        ).pack(side=LEFT, padx=15)
 
-        self.kpi_frame = ttk.Frame(self.main_frame, style="TFrame")
-        self.kpi_frame.pack(fill=X, padx=20, pady=10)
-
-        charts_row = ttk.Frame(self.main_frame, style="TFrame")
+        charts_row = ttk.Frame(self, style="TFrame")
         charts_row.pack(fill=X, padx=20, pady=5)
-
         self.chart1 = ChartFrame(charts_row, title="Tendencia")
         self.chart1.pack(side=LEFT, fill=BOTH, expand=True, padx=(0, 5))
         self.chart2 = ChartFrame(charts_row, title="Distribuicao")
         self.chart2.pack(side=LEFT, fill=BOTH, expand=True, padx=(5, 0))
 
-        self.table_frame = ttk.Frame(self.main_frame, style="TFrame")
-        self.table_frame.pack(fill=BOTH, expand=True, padx=20, pady=10)
+        table_section = ttk.Frame(self, style="TFrame")
+        table_section.pack(fill=BOTH, expand=True, padx=20, pady=5)
         ttk.Label(
-            self.table_frame, text="Dados Recentes",
-            font=("Segoe UI", 12, "bold"),
+            table_section, text="Dados Recentes",
+            font=("Segoe UI", 11, "bold"),
             foreground=COLORS["neon_blue"], background=COLORS["bg_dark"],
-        ).pack(anchor=W, pady=(0, 8))
-        self.data_table = DataTable(self.table_frame)
+        ).pack(anchor=W, pady=(0, 5))
+        self.data_table = DataTable(table_section)
         self.data_table.pack(fill=BOTH, expand=True)
+
+        kpi_row = ttk.Frame(self, style="Card.TFrame")
+        kpi_row.pack(fill=X, padx=20, pady=(5, 15))
+
+        self.kpi_container = ttk.Frame(kpi_row, style="Card.TFrame")
+        self.kpi_container.pack(fill=X, padx=10, pady=10)
 
         self.status_var = ttk.StringVar(value="Pronto")
         ttk.Label(
-            self.main_frame, textvariable=self.status_var,
-            font=("Segoe UI", 9),
+            self, textvariable=self.status_var, font=("Segoe UI", 8),
             foreground=COLORS["text_muted"], background=COLORS["bg_dark"],
-        ).pack(anchor=W, padx=20, pady=(5, 20))
+        ).pack(anchor=W, padx=20, pady=(0, 5))
 
     def load_data(self):
         self.status_var.set("Carregando dados...")
@@ -98,19 +82,19 @@ class DashboardPage(ttk.Frame):
             self._update_charts()
             self._update_table()
             self.status_var.set(
-                f"Atualizado - {len(schema_discover.tables)} tabelas encontradas"
+                f"Atualizado - {len(schema_discover.tables)} tabelas"
             )
         except Exception as e:
-            self.status_var.set(f"Erro ao atualizar: {e}")
+            self.status_var.set(f"Erro: {e}")
 
     def _update_kpi_cards(self):
-        for widget in self.kpi_frame.winfo_children():
+        for widget in self.kpi_container.winfo_children():
             widget.destroy()
 
         total_receita = 0
         total_registros = 0
         margem = 0
-        media_valor = 0
+        total_lucro = 0
 
         for table, kpis in kpi_engine.kpis.items():
             vendas = kpis.get("vendas", {})
@@ -118,26 +102,41 @@ class DashboardPage(ttk.Frame):
             resumo = kpis.get("resumo", {})
             total_registros += resumo.get("total_registros", 0)
             margem = fin.get("margem_percentual", margem)
+            total_lucro = fin.get("lucro", total_lucro)
             for key, val in vendas.items():
                 if key.endswith("_total") and isinstance(val, (int, float)):
                     total_receita += val
-            amount_cols = vendas.get("colunas_valor", [])
-            if amount_cols:
-                media_val = vendas.get(f"{amount_cols[0]}_media", 0)
-                media_valor += media_val
 
-        cards_data = [
-            ("Registros Total", f"{total_registros:,}", None, COLORS["neon_blue"]),
-            ("Receita Total", f"R$ {total_receita:,.2f}", None, COLORS["neon_green"]),
-            ("Margem %", f"{margem:.1f}%", None, COLORS["neon_purple"]),
-            ("Media por Registro", f"R$ {media_valor:,.2f}", None, COLORS["neon_orange"]),
+        spark_data_1 = [random.randint(80, 150) for _ in range(10)]
+        spark_data_2 = [random.randint(50, 120) for _ in range(10)]
+        spark_data_3 = [random.randint(30, 90) for _ in range(10)]
+        spark_data_4 = [random.randint(60, 100) for _ in range(10)]
+
+        cards = [
+            ("Total Revenue", f"${total_receita:,.2f}", spark_data_1, COLORS["neon_blue"]),
+            ("Active Projects", f"{total_registros}", spark_data_2, COLORS["neon_green"]),
+            ("Profit Margin", f"{margem:.1f}%", spark_data_3, COLORS["neon_purple"]),
+            ("Net Profit", f"${total_lucro:,.2f}", spark_data_4, COLORS["neon_orange"]),
         ]
 
-        for i, (label, value, change, color) in enumerate(cards_data):
-            card = KPICard(self.kpi_frame, label=label, value=value, change=change, color=color)
-            card.grid(row=0, column=i, padx=8, pady=5, sticky=NSEW)
-            self.kpi_frame.columnconfigure(i, weight=1)
-            self.kpi_cards[label] = card
+        for i, (label, value, spark, color) in enumerate(cards):
+            card_frame = ttk.Frame(self.kpi_container, style="Card.TFrame")
+            card_frame.pack(side=LEFT, fill=BOTH, expand=True, padx=5)
+
+            inner = ttk.Frame(card_frame, style="Card.TFrame")
+            inner.pack(fill=BOTH, expand=True, padx=10, pady=8)
+
+            ttk.Label(
+                inner, text=label, font=("Segoe UI", 9),
+                foreground=COLORS["text_muted"], background=COLORS["bg_card"],
+            ).pack(anchor=W)
+            ttk.Label(
+                inner, text=value, font=("Segoe UI", 20, "bold"),
+                foreground=color, background=COLORS["bg_card"],
+            ).pack(anchor=W, pady=(2, 0))
+
+            spark_frame = MiniSparkline(inner, data=spark, color=color)
+            spark_frame.pack(fill=X, pady=(5, 0))
 
     def _update_charts(self):
         for table, kpis in kpi_engine.kpis.items():
@@ -145,13 +144,12 @@ class DashboardPage(ttk.Frame):
             top_cats = vendas.get("top_categorias", [])
             amount_cols = vendas.get("colunas_valor", [])
             date_col = vendas.get("coluna_data")
-            cat_col = vendas.get("coluna_categoria")
 
             if top_cats and len(top_cats) > 1:
                 df_cats = pd.DataFrame(top_cats)
                 if "categoria" in df_cats.columns and "total" in df_cats.columns:
                     fig = create_pie_chart(
-                        df_cats.head(8), "categoria", "total",
+                        df_cats.head(6), "categoria", "total",
                         title=f"Distribuicao - {table}",
                     )
                     self.chart2.set_figure(fig)
