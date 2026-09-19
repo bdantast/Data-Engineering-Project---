@@ -17,7 +17,12 @@ class App:
         self.root.title(f"{APP_NAME} v{APP_VERSION} - Business Intelligence")
         self.root.geometry("1280x800")
         self.root.minsize(1024, 600)
-        self.root.place_window_center()
+        self.root.update_idletasks()
+        w = self.root.winfo_screenwidth()
+        h = self.root.winfo_screenheight()
+        x = (w - 1280) // 2
+        y = (h - 800) // 2
+        self.root.geometry(f"1280x800+{x}+{y}")
         self.root.configure(bg=COLORS["bg_dark"])
         self._setup_custom_theme()
         self.pages = {}
