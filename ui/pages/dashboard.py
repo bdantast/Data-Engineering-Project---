@@ -16,50 +16,47 @@ import random
 class DashboardPage(ttk.Frame):
     def __init__(self, parent, **kwargs):
         super().__init__(parent, **kwargs)
-        self.configure(style="TFrame")
         self.kpi_cards = {}
         self._build_ui()
 
     def _build_ui(self):
-        header = ttk.Frame(self, style="TFrame")
+        header = ttk.Frame(self)
         header.pack(fill=X, padx=20, pady=(15, 5))
         ttk.Label(
             header, text="Dashboard - Visao Geral",
             font=("Segoe UI", 16, "bold"),
-            foreground=COLORS["text_primary"], background=COLORS["bg_dark"],
         ).pack(side=LEFT)
         ttk.Button(
             header, text="Atualizar", bootstyle="warning",
             command=self.load_data, width=12,
         ).pack(side=LEFT, padx=15)
 
-        charts_row = ttk.Frame(self, style="TFrame")
+        charts_row = ttk.Frame(self)
         charts_row.pack(fill=X, padx=20, pady=5)
         self.chart1 = ChartFrame(charts_row, title="Tendencia")
         self.chart1.pack(side=LEFT, fill=BOTH, expand=True, padx=(0, 5))
         self.chart2 = ChartFrame(charts_row, title="Distribuicao")
         self.chart2.pack(side=LEFT, fill=BOTH, expand=True, padx=(5, 0))
 
-        table_section = ttk.Frame(self, style="TFrame")
+        table_section = ttk.Frame(self)
         table_section.pack(fill=BOTH, expand=True, padx=20, pady=5)
         ttk.Label(
             table_section, text="Dados Recentes",
             font=("Segoe UI", 11, "bold"),
-            foreground=COLORS["neon_blue"], background=COLORS["bg_dark"],
+            bootstyle="info",
         ).pack(anchor=W, pady=(0, 5))
         self.data_table = DataTable(table_section)
         self.data_table.pack(fill=BOTH, expand=True)
 
-        kpi_row = ttk.Frame(self, style="Card.TFrame")
+        kpi_row = ttk.LabelFrame(self, text=" KPIs ", bootstyle="info")
         kpi_row.pack(fill=X, padx=20, pady=(5, 15))
 
-        self.kpi_container = ttk.Frame(kpi_row, style="Card.TFrame")
+        self.kpi_container = ttk.Frame(kpi_row)
         self.kpi_container.pack(fill=X, padx=10, pady=10)
 
         self.status_var = ttk.StringVar(value="Pronto")
         ttk.Label(
             self, textvariable=self.status_var, font=("Segoe UI", 8),
-            foreground=COLORS["text_muted"], background=COLORS["bg_dark"],
         ).pack(anchor=W, padx=20, pady=(0, 5))
 
     def load_data(self):
@@ -81,9 +78,7 @@ class DashboardPage(ttk.Frame):
             self._update_kpi_cards()
             self._update_charts()
             self._update_table()
-            self.status_var.set(
-                f"Atualizado - {len(schema_discover.tables)} tabelas"
-            )
+            self.status_var.set(f"Atualizado - {len(schema_discover.tables)} tabelas")
         except Exception as e:
             self.status_var.set(f"Erro: {e}")
 
@@ -107,32 +102,29 @@ class DashboardPage(ttk.Frame):
                 if key.endswith("_total") and isinstance(val, (int, float)):
                     total_receita += val
 
-        spark_data_1 = [random.randint(80, 150) for _ in range(10)]
-        spark_data_2 = [random.randint(50, 120) for _ in range(10)]
-        spark_data_3 = [random.randint(30, 90) for _ in range(10)]
-        spark_data_4 = [random.randint(60, 100) for _ in range(10)]
+        spark1 = [random.randint(80, 150) for _ in range(10)]
+        spark2 = [random.randint(50, 120) for _ in range(10)]
+        spark3 = [random.randint(30, 90) for _ in range(10)]
+        spark4 = [random.randint(60, 100) for _ in range(10)]
 
         cards = [
-            ("Total Revenue", f"${total_receita:,.2f}", spark_data_1, COLORS["neon_blue"]),
-            ("Active Projects", f"{total_registros}", spark_data_2, COLORS["neon_green"]),
-            ("Profit Margin", f"{margem:.1f}%", spark_data_3, COLORS["neon_purple"]),
-            ("Net Profit", f"${total_lucro:,.2f}", spark_data_4, COLORS["neon_orange"]),
+            ("Total Revenue", f"${total_receita:,.2f}", spark1, COLORS["neon_blue"]),
+            ("Active Projects", f"{total_registros}", spark2, COLORS["neon_green"]),
+            ("Profit Margin", f"{margem:.1f}%", spark3, COLORS["neon_purple"]),
+            ("Net Profit", f"${total_lucro:,.2f}", spark4, COLORS["neon_orange"]),
         ]
 
         for i, (label, value, spark, color) in enumerate(cards):
-            card_frame = ttk.Frame(self.kpi_container, style="Card.TFrame")
+            card_frame = ttk.Frame(self.kpi_container)
             card_frame.pack(side=LEFT, fill=BOTH, expand=True, padx=5)
 
-            inner = ttk.Frame(card_frame, style="Card.TFrame")
+            inner = ttk.Frame(card_frame)
             inner.pack(fill=BOTH, expand=True, padx=10, pady=8)
 
-            ttk.Label(
-                inner, text=label, font=("Segoe UI", 9),
-                foreground=COLORS["text_muted"], background=COLORS["bg_card"],
-            ).pack(anchor=W)
+            ttk.Label(inner, text=label, font=("Segoe UI", 9)).pack(anchor=W)
             ttk.Label(
                 inner, text=value, font=("Segoe UI", 20, "bold"),
-                foreground=color, background=COLORS["bg_card"],
+                bootstyle="info",
             ).pack(anchor=W, pady=(2, 0))
 
             spark_frame = MiniSparkline(inner, data=spark, color=color)
